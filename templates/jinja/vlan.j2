@@ -1,0 +1,6 @@
+create {{ ether_type }} v{{ vlan }}-{{ customer_name }}
+configure {{ ether_type }} v{{ vlan }}-{{ customer_name }} description {{ service_name }}
+configure {{ ether_type }} v{{ vlan }}-{{ customer_name }} tag {{ vlan }}
+{% for port in ports -%}
+configure {{ ether_type }} v{{ vlan }}-{{ customer_name }} add ports {{ port.name[0] }} {{ port.dot1q }}
+{% endfor -%}

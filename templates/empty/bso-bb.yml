@@ -1,0 +1,40 @@
+---
+customer_name: 'ACME'
+services:
+  # Service
+  - vlan: 356
+    service_name: 'DIA/LON/IXR-10556'    # EPL/LON/PAR/IXR-1234
+    service_type: 'bso-bb'                    # vpws/vpls/vlan/bso-bb
+    endpoints:
+      - device: 'sdx3.thn.lon'              # tagged/untagged
+        ether_type: 'vman'                   # vlan/vman
+        ports:
+          - dot1q: 'untagged'
+            name:
+              - 3
+          - dot1q: 'tagged'
+            name:
+              - 34
+
+
+      - device: 'sdx1.the.lon'              # tagged/untagged
+        ether_type: 'vman'                   # vlan/vman
+        ports:
+          - dot1q: 'untagged'
+            name:
+              - 3
+          - dot1q: 'tagged'
+            name:
+              - 56
+              - 57
+
+      - device: 'sdx2.the.lon'              # tagged/untagged
+        ether_type: 'vman'                   # vlan/vman
+        ip_address: '193.15.36.125'
+        ports:
+          - dot1q: 'untagged'
+            name:
+              - 35
+          - dot1q: 'tagged'
+            name:
+              - 34

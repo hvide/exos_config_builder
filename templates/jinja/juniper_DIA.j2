@@ -1,0 +1,33 @@
+interfaces {
+    {{ ports[0].name[0] }} {
+        unit {{ vlan }} {
+            description {{ service_name }};
+            encapsulation ethernet;
+            peer-unit 5{{ vlan }};
+            family inet {
+                mtu 1500;
+                address {{ ip_address_v4 }};
+            }
+        }
+        unit 5{{ vlan }} {
+            encapsulation ethernet-ccc;
+            peer-unit {{ vlan }};
+        }
+    }
+}
+
+protocols {
+    l2circuit {
+        neighbor {{ peers_ip[0] }} {
+            interface {{ ports[0].name[0] }}.5{{ vlan }} {
+                virtual-circuit-id {{ vlan }};
+            }
+        }
+    }
+}
+
+routing-instances {
+    NON-PREMIUM {
+        interface {{ ports[0].name[0] }}.{{ vlan }};
+    }
+}

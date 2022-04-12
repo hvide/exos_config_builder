@@ -1,0 +1,6 @@
+create l2vpn {{ service_type }} w{{ vlan }}-{{ customer_name }} fec-id-type pseudo-wire {{ vlan }}
+configure l2vpn {{ service_type }} w{{ vlan }}-{{ customer_name }} add service {{ ether_type }} v{{ vlan }}-{{ customer_name }}
+configure l2vpn {{ service_type }} w{{ vlan }}-{{ customer_name }} mtu 9190
+{% for peer_ip in peers_ip -%}
+configure l2vpn {{ service_type }} w{{ vlan }}-{{ customer_name }} add peer {{ peer_ip }} {%- if service_type == 'vpls' %} core full-mesh {% endif %}
+{% endfor -%}

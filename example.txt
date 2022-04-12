@@ -1,0 +1,79 @@
+## Example ##
+#---
+#customer_name: 'Acme'             # Don't put whitespaces in the description
+#services:
+
+#  # VPLS Service
+#  - vlan: '3000'                  # Vlan number
+#    service_type: 'vpls'          # Service type
+#    ether_type: 'vlan'
+#    endpoints:
+#      - device: 'x1.the.lon'      # Device name
+#        dot1q: 'untagged'         # Port type (tagged/untagged)
+#        ports:                    # List of ports to be configured. With LACP the first is the master port
+#          - 25
+#
+#      - device: 's2.th2.par'
+#        dot1q: 'tagged'
+#        ports:
+#          - 34
+#          - 35
+#
+#      - device: 'x3.thn.lon'
+#        dot1q: 'tagged'
+#        ports:
+#          - 1
+#          - 2
+#          - 3
+#          - 4
+
+#  # VPWS Service
+#  - vlan: '3444'
+#    service_type: 'vpws'
+#    endpoints:
+#      - device: 'x2.the.lon'
+#        dot1q: 'untagged'
+#        ports:
+#          - 12
+#
+#      - device: 'x1.th2.par'
+#        dot1q: 'tagged'
+#        ports:
+#          - 23
+#          - 24
+
+#  # VLAN Service
+#  - vlan: '3444'
+#    service_type: 'vlan'
+#    endpoints:
+#      - device: 'x2.the.lon'
+#        uplink: 25
+#        dot1q: 'untagged'
+#        ports:
+#          - 12
+
+## Proposed Change ##
+#---
+#customer_name: ''
+#services:
+#  # Service
+#  - vlan: ''
+#    service_name: ''    # EPL/LON/PAR/IXR-1234
+#    service_type: ''        # vpws/vpls
+#    endpoints:
+#      - device: ''
+#        ether_type: ''          # vlan/vman
+#        ports:
+#          - dot1q: ''
+#            name:
+#              -
+#          - dot1q: ''
+#            name:
+#              -
+#
+#      - device: ''
+#        dot1q: 'tagged'
+#        ip_address_v4: ''
+#        ports:
+#          -
+

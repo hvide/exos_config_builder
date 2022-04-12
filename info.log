@@ -1,0 +1,16 @@
+2022-04-08 12:31:01,163 INFO :: VLAN 5000 is not in range 1 to 4095
+2022-04-08 12:34:57,609 ERROR :: VLAN 5000 is not in range 1 to 4095
+2022-04-08 12:35:33,686 ERROR :: VLAN 5000 is not in range 1 to 4095
+2022-04-08 12:42:01,465 ERROR :: VLAN 5000 is not in range 1 to 4095
+2022-04-08 12:51:45,374 ERROR :: VLAN 5000 is not in range 1 to 4095
+2022-04-08 13:22:11,804 ERROR :: Error
+2022-04-08 13:24:37,123 ERROR :: Error: VPWS service only allow for 1 port per endpoint [{'dot1q': 'tagged', 'name': [3, 4]}, {'dot1q': 'untagged', 'name': [10]}] have 2
+2022-04-08 13:25:35,145 ERROR :: Error: VPWS service only allow for 1 port per endpoint sdx3.thn.lon have 2
+2022-04-08 13:25:45,965 ERROR :: Error: VPWS service only allow for 1 port per endpoint sdx3.thn.lon have 2.
+2022-04-08 13:34:22,009 ERROR :: Error: VPWS service only allow for 1 port per endpoint sdx3.thn.lon have 2.
+2022-04-08 13:40:48,016 ERROR :: Error: VPWS service only allow for 1 port per endpoint sdx3.thn.lon have 2.
+2022-04-08 13:43:33,383 ERROR :: Error: VPWS service only allow for 2 enpoints. DIA/LON/IXR-10556 have 3.
+2022-04-08 13:43:57,511 ERROR :: Error: VPWS service only allow for 2 endpoints. DIA/LON/IXR-10556 have 3.
+2022-04-08 14:05:18,462 ERROR :: Error: VPWS service only allow for 2 endpoints. DIA/LON/IXR-10556 have 3.
+2022-04-08 14:31:36,882 ERROR :: Error: VPWS service only allow for 2 endpoints. DIA/LON/IXR-10556 have 3.
+2022-04-10 10:33:23,677 ERROR :: Error: VPWS service only allow for 1 port per endpoint sdx3.thn.lon have 2.

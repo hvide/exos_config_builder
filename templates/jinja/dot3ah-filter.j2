@@ -1,0 +1,5 @@
+create protocol filter "dot3ah"
+configure protocol filter "dot3ah" add dest-mac 01:80:c2:00:00:02 etype 0x8809 field offset 14 value 03 mask ff
+create l2pt profile "802dot3ah"
+configure l2pt profile "802dot3ah" add protocol filter "dot3ah"
+create qosprofile "QP7"
