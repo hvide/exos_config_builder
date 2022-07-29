@@ -38,7 +38,7 @@ logger.addHandler(file_handler)
 
 DIR = os.path.dirname(os.path.realpath(__file__)) + '/'
 TEMPLATE = DIR + 'templates/jinja/main.j2'
-EMPTY_YML_TEMPLATE = DIR + 'templates/empty/'
+EMPTY_YML_TEMPLATE = DIR + 'templates/yaml/'
 EXAMPLE = DIR + 'example.txt'
 
 
