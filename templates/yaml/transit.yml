@@ -6,7 +6,7 @@ services:
     service_name: "DIA/LON/IXR-10556" # EPL/LON/PAR/IXR-1234
     service_type: "trs" # vpws/vpls/vlan/bso-bb
     endpoints:
-      - device: "sdx3.thn.lon" # tagged/untagged
+      - device: "" # tagged/untagged
         ether_type: "vlan" # vlan/vman
         ports:
           - dot1q: "tagged"
@@ -17,10 +17,10 @@ services:
             name:
               - 10
 
-      - device: "icr1.the.lon" # tagged/untagged
+      - device: "" # tagged/untagged
         ether_type: "vlan" # vlan/vman
-        ip_address_v4: "193.15.36.125/30"
-        ip_address_v6: "2a02:27f0:2:353::/127"
+        ip_address_v4: "1.1.1.1/30"
+        ip_address_v6: "2a02:aaaa:2:434::/127"
         bgp:
           asn: "AS12345"
           group: "CUSTOMER-FULL"

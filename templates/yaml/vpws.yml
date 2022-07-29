@@ -1,22 +1,21 @@
 ---
-customer_name: 'ACME'
+customer_name: "ACME"
 services:
   # Service
   - vlan: 356
-    service_name: 'EPL/LON/LON/IXR-10556'    # EPL/LON/PAR/IXR-1234
-    service_type: 'vpws'                    # vpws/vpls/vlan/bso-bb
+    service_name: "EPL/LON/LON/IXR-10556" # EPL/LON/PAR/IXR-1234
+    service_type: "vpws" # vpws/vpls/vlan/bso-bb
     endpoints:
-      - device: 'sdx3.thn.lon'              # tagged/untagged
-        ether_type: 'vlan'                   # vlan/vman
+      - device: "" # tagged/untagged
+        ether_type: "vlan" # vlan/vman
         ports:
-          - dot1q: 'tagged'
+          - dot1q: "tagged"
             name:
               - 3
 
-
-      - device: 'sdx1.the.lon'              # tagged/untagged
-        ether_type: 'vlan'                   # vlan/vman
+      - device: "" # tagged/untagged
+        ether_type: "vlan" # vlan/vman
         ports:
-          - dot1q: 'untagged'
+          - dot1q: "untagged"
             name:
               - 3
