@@ -1,8 +1,5 @@
-{% for port in ports -%}
-{% if port.dot1q == "untagged" %}
 {% if is_pe == True -%}
->configure ports {{ port.name[0] }} qosprofile qp7
->configure vlan v{{ vlan }}-{{ customer_name }} ports {{ port.name[0] }} l2pt profile "802dot3ah"
+configure ports {{ ports[0].name[0] }} qosprofile qp7
+configure vlan v{{ vlan }}-{{ customer_name }} ports {{ ports[0].name[0] }} l2pt profile "802dot3ah"
 {% endif -%}
-{% endif -%}
-{% endfor -%}
+

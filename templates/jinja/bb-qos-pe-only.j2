@@ -1,3 +1,5 @@
 {% for port_name in all_ports -%}
+{% if is_pe == True -%}
 enable dot1p replacement ports {{ port_name }} qosprofile QP7
+{% endif -%}
 {% endfor -%}

@@ -4,19 +4,11 @@ import sys
 import yaml
 import jinja2
 import socket
+import os
 
 logger = logging.getLogger()
 
-
-# def add_log(msg: str):
-#     """
-#     Add a log to the list so that it can be picked by the update_ui() method of the root component.
-#     :param msg:
-#     :return:
-#     """
-#
-#     logger.info("%s", msg)
-#     # logs.append({"log": msg, "displayed": False})
+DIR = os.path.dirname(os.path.realpath(__file__)) + '/'
 
 
 def yml_load(x):
@@ -31,8 +23,7 @@ def yml_load(x):
 
 def jinja2_load(filename: str):
     with open(filename) as t:
-        # return jinja2.Template(t.read())
-        return jinja2.Environment(loader=jinja2.FileSystemLoader('./templates/')).from_string(t.read())
+        return jinja2.Environment(loader=jinja2.FileSystemLoader(DIR + '/templates/jinja/')).from_string(t.read())
 
 
 def j2_render(template: str, data: typing.Dict):
@@ -45,6 +36,5 @@ def resolve(hostname):
     try:
         return socket.gethostbyname(hostname + domain)
     except socket.gaierror as e:
-        # print('%s\nThe hostname %s could not be resolved.' % (str(e), hostname))
-        add_log('%s\nThe hostname %s could not be resolved.' % (str(e), hostname))
+        logger.error(f"Error {e}: Couldn't resolve {hostname}")
         sys.exit(1)

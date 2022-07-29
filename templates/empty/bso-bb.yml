@@ -1,40 +1,54 @@
 ---
-customer_name: 'ACME'
+"""
+Note:
+- First and last endpoints needs to be the one facing the 'customer' (provider edge)
+- The first interface of 'provider edge' endpoints is the one facing the customer
+"""
+customer_name: ''
 services:
   # Service
-  - vlan: 356
-    service_name: 'DIA/LON/IXR-10556'    # EPL/LON/PAR/IXR-1234
-    service_type: 'bso-bb'                    # vpws/vpls/vlan/bso-bb
+  - vlan:       # < Add the vlan (int)
+    service_name: 'EPL/LON/DUB/IXR-9999'    # EPL/LON/PAR/IXR-1234
+    service_type: 'bso-bb'                  # vpws/vpls/vlan/bso-bb
     endpoints:
-      - device: 'sdx3.thn.lon'              # tagged/untagged
-        ether_type: 'vman'                   # vlan/vman
+      # START
+      - device: ''
+        ether_type: 'vman'                  # vlan/vman
         ports:
-          - dot1q: 'untagged'
+          - dot1q: 'tagged'   # 1st port is the customer facing
             name:
-              - 3
+              -
+          - dot1q: 'tagged'  # BSO|IXR NNI
+            name:
+              -
+
+      - device: ''
+        ether_type: 'vman'
+        ports:
           - dot1q: 'tagged'
             name:
-              - 34
-
-
-      - device: 'sdx1.the.lon'              # tagged/untagged
-        ether_type: 'vman'                   # vlan/vman
-        ports:
-          - dot1q: 'untagged'
-            name:
-              - 3
+              -
           - dot1q: 'tagged'
             name:
-              - 56
-              - 57
+              -
 
-      - device: 'sdx2.the.lon'              # tagged/untagged
-        ether_type: 'vman'                   # vlan/vman
-        ip_address: '193.15.36.125'
+      - device: ''
+        ether_type: 'vman'
         ports:
-          - dot1q: 'untagged'
-            name:
-              - 35
           - dot1q: 'tagged'
             name:
-              - 34
+              -
+          - dot1q: 'tagged'
+            name:
+              -
+
+      # END
+      - device: ''
+        ether_type: 'vman'
+        ports:
+          - dot1q: 'tagged'   # 1st port is the customer facing
+            name:
+              -
+          - dot1q: 'tagged'   # BSO|IXR NNI
+            name:
+              -

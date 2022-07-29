@@ -1,8 +1,13 @@
+#!/usr/local/bin/python3
 import logging
 import os
 import sys
+import argparse
+import typing
+import jinja2
+from tabulate import tabulate
 
-from models.services import Vpws, Vpls, Vlan, BsoBb, Trs
+from models.services import Vpws, Vpls, Vlan, BsoBb, Trs, Dia
 from models.endpoints import Extreme, Juniper
 
 from pprint import pprint
@@ -15,64 +20,123 @@ logger = logging.getLogger()
 
 logger.setLevel(logging.DEBUG)  # Overall minimum logging level
 
-stream_handler = logging.StreamHandler()  # Configure the logging messages displayed in the Terminal
+# Configure the logging messages displayed in the Terminal
+stream_handler = logging.StreamHandler()
 formatter = logging.Formatter('%(asctime)s %(levelname)s :: %(message)s')
 stream_handler.setFormatter(formatter)
-stream_handler.setLevel(logging.INFO)  # Minimum logging level for the StreamHandler
+# Minimum logging level for the StreamHandler
+stream_handler.setLevel(logging.INFO)
 
-file_handler = logging.FileHandler('info.log')  # Configure the logging messages written to a file
+# Configure the logging messages written to a file
+file_handler = logging.FileHandler('info.log')
 file_handler.setFormatter(formatter)
-file_handler.setLevel(logging.DEBUG)  # Minimum logging level for the FileHandler
+# Minimum logging level for the FileHandler
+file_handler.setLevel(logging.DEBUG)
 
 logger.addHandler(stream_handler)
 logger.addHandler(file_handler)
 
 DIR = os.path.dirname(os.path.realpath(__file__)) + '/'
-TEMPLATE = DIR + 'templates/main.j2'
+TEMPLATE = DIR + 'templates/jinja/main.j2'
+EMPTY_YML_TEMPLATE = DIR + 'templates/empty/'
+EXAMPLE = DIR + 'example.txt'
+
+
+def report(datas: typing.Dict):
+
+    table = []
+    for data in datas['services']:
+        row = []
+        row.append(data['service_name'])
+        row.append(data['vlan'])
+
+        for endpoint in data['endpoints']:
+            row.append(endpoint['device'])
+            row.append(endpoint['ports'][0]['name'][0])
+
+        table.append(row)
+
+    return table
+
+
+empty_template = {
+    'bb': 'bso-bb.yml',
+    'trs': 'transit.yml',
+    'dia': 'dia.yml',
+    'vlan': 'vlan.yml',
+    'vpls': 'vpls.yml',
+    'vpws': 'vpws.yml',
+}
+
+parser = argparse.ArgumentParser()
+parser.add_argument('-c', type=str, action="store",
+                    dest="config", required=False, help="Path to .yml file")
+parser.add_argument('-t', type=str, action="store", dest="template", required=False,
+                    help=f"Can be one of the following: {list(empty_template.keys())}.")
+parser.add_argument('-e', action="store_true", dest="example",
+                    required=False, help="Print example")
+
 
 if __name__ == '__main__':
 
-    config = yml_load('conf.yml')
+    args = parser.parse_args()
+    if args.example:
+        with open(EXAMPLE, 'r') as f:
+            lines = f.readlines()
+            for line in lines:
+                print(line.rstrip())
+            sys.exit(0)
 
-    data = {'customer_name': config['customer_name']}
+    if args.template in empty_template:
+        with open(EMPTY_YML_TEMPLATE + empty_template[args.template], 'r') as f:
+            lines = f.readlines()
+            for line in lines:
+                print(line.rstrip())
+            sys.exit(0)
 
-    for service in config['services']:
+    if args.config:
+        yml_file: object = args.config
+        if not yml_file:
+            yml_file = 'conf.yml'
+        config = yml_load(yml_file)
 
-        if service['service_type'] == 'vpws':
-            service_obj = Vpws(service)
-        elif service['service_type'] == "vpls":
-            service_obj = Vpls(service)
-        elif service['service_type'] == "vlan":
-            service_obj = Vlan(service)
-        elif service['service_type'] == "bso-bb":
-            service_obj = BsoBb(service)
-        elif service['service_type'] == "trs":
-            service_obj = Trs(service)
+        data = {'customer_name': config['customer_name']}
 
-        print("\n########################\n## Service: v{}-{} ##\n".format(service_obj.vlan, data['customer_name']))
-        data = data | service_obj.to_dict()
+        for service in config['services']:
 
-        for endpoint in service['endpoints']:
+            if service['service_type'] == 'vpws':
+                service_obj = Vpws(service)
+            elif service['service_type'] == "vpls":
+                service_obj = Vpls(service)
+            elif service['service_type'] == "vlan":
+                service_obj = Vlan(service)
+            elif service['service_type'] == "bso-bb":
+                service_obj = BsoBb(service)
+            elif service['service_type'] == "trs":
+                service_obj = Trs(service)
+            elif service['service_type'] == "dia":
+                service_obj = Dia(service)
 
-            if endpoint['device'].startswith("sdx") or endpoint['device'].startswith("sds"):
-                endpoint_obj = Extreme(endpoint, service_obj.all_peers, service_obj.service_type)
-            elif endpoint['device'].startswith("icr"):
-                endpoint_obj = Juniper(endpoint, service_obj.all_peers, service_obj.service_type)
+            print("\n########################\n## Service: v{}-{} ##\n".format(
+                service_obj.vlan, data['customer_name']))
+            data = data | service_obj.to_dict()
+            # pprint(data)
+            for endpoint in service['endpoints']:
 
-            pprint(endpoint_obj.to_dict())
-            data = data | endpoint_obj.to_dict()
-            print(j2_render(TEMPLATE, data))
+                if endpoint['device'].startswith("sdx") or endpoint['device'].startswith("sds"):
+                    endpoint_obj = Extreme(
+                        endpoint, service_obj.all_peers, service_obj.service_type)
+                elif endpoint['device'].startswith("icr"):
+                    endpoint_obj = Juniper(
+                        endpoint, service_obj.all_peers, service_obj.service_type, data['customer_name'])
 
+                data = data | endpoint_obj.to_dict()
+                print('')
+                print(j2_render(TEMPLATE, data))
 
-
-# pprint(service_obj.__dict__)
-
-        # for obj in endpoint_list:
-        #     temp_dict = dict(host_dict)
-        #     del temp_dict[obj.device]
-        #     obj.peer_ip = list(temp_dict.values())
-        #     obj.device_ip = host_dict[obj.device]
-        #     template = set_template(obj.device)
-        #     print(template.render(obj.__dict__))
-
-
+        # REPORT
+        # print('')
+        # headers = ['Service ID', 'Vlan', 'A-end',
+        #            'A-end port', 'Z-end', 'Z-end port']
+        # table = report(config)
+        # print(tabulate(table, headers=headers))

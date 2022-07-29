@@ -8,6 +8,12 @@ interfaces {
                 mtu 1500;
                 address {{ ip_address_v4 }};
             }
+        {% if ip_address_v6 is defined -%}
+            family inet6 {
+                mtu 1500;
+                address {{ ip_address_v6 }};
+            }
+        {% endif -%}
         }
         unit 5{{ vlan }} {
             encapsulation ethernet-ccc;
@@ -31,3 +37,78 @@ routing-instances {
         interface {{ ports[0].name[0] }}.{{ vlan }};
     }
 }
+
+{% if service_type == "trs" -%}
+
+routing-instances {
+    NON-PREMIUM {
+        protocols {
+            bgp {
+            	group {{ group }} {
+                    neighbor {{ bgp_neighbor_v4 }} {
+                        description {{ service_name }};
+                        import CUSTOMER-{{ customer_name.upper() }}-IN;
+                        family inet {
+                            unicast {
+                                prefix-limit {
+                                    maximum {{ prefix_limit_v4 }};
+                                    teardown idle-timeout 60;
+                                }
+                            }
+                        }
+                        export {{ export_policy  }};
+                        peer-as {{ asn }};
+                    }
+            	}
+                {% if ip_address_v6 is defined -%}
+            	group {{ group }}-V6 {
+                    neighbor {{ bgp_neighbor_v6 }} {
+                        description {{ service_name }};
+                        import CUSTOMER-{{ customer_name.upper() }}-V6-IN;
+                        family inet6 {
+                            unicast {
+                                prefix-limit {
+                                    maximum {{ prefix_limit_v6 }};
+                                    teardown idle-timeout 60;
+                                }
+                            }
+                        }
+                        export {{ export_policy  }};
+                        peer-as {{ asn }};
+                    }
+            	}
+            {% endif -%}
+            }
+        }
+    }
+}
+
+policy-options {
+	policy-statement CUSTOMER-{{ customer_name.upper() }}-IN {
+        term ALLOW {
+            from {
+                policy CUSTOMER-IN;
+                {% for prefix in prefix_list_v4 -%}
+                route-filter {{ prefix }} upto /32;
+                {% endfor -%}
+            }
+            then accept;
+        }
+        then reject;
+    }
+    {% if ip_address_v6 is defined -%}
+    policy-statement CUSTOMER-{{ customer_name.upper() }}-V6-IN {
+        term ALLOW {
+            from {
+                policy CUSTOMER-IN;
+                {% for prefix in prefix_list_v6 -%}
+                route-filter {{ prefix }} upto /128;
+                {% endfor -%}
+            }
+            then accept;
+        }
+        then reject;
+    }
+{% endif -%}
+}
+{% endif %}

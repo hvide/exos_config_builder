@@ -1,0 +1,27 @@
+# Device: {{ device }} - {{ device_ip }}
+
+{% if vendor == "extreme" -%}
+
+{% if (service_type == 'bso-bb') -%}
+{% include 'dot3ah-filter.j2' %}
+{% include 'bb-qos-pe-only.j2' -%}
+{% endif -%}
+
+{% include 'vlan.j2' -%}
+
+{% if (service_type == 'bso-bb') -%}
+{% include 'bb-vman-qos-all.j2' %}
+{% include 'bb-qos-customer-facing-only.j2' -%}
+{% endif -%}
+
+{% if ((service_type == 'vpls') or (service_type == 'vpws') or (service_type == 'dia') or (service_type == 'trs')) -%}
+{% include 'l2vpn.j2' -%}
+{% endif -%}
+
+{% include 'monitor.j2' -%}
+
+{% elif vendor == "juniper" -%}
+
+{% include 'juniper_DIA.j2' -%}
+
+{% endif %}

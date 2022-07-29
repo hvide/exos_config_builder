@@ -26,7 +26,7 @@ class Endpoint:
                 else:
                     self.is_pe = False
             else:
-                self.peers_ip.append(peer)
+                self.peers_ip.append(resolve(peer))
 
     def __repr__(self):
         return self.device
@@ -58,24 +58,48 @@ class Extreme(Endpoint):
 
 
 class Juniper(Endpoint):
-    def __init__(self, endpoint, all_peers, service_type):
+    def __init__(self, endpoint, all_peers, service_type, customer_name):
         super(Juniper, self).__init__(endpoint, all_peers, service_type)
         self.vendor = "juniper"
         self.ip_address_v4 = endpoint['ip_address_v4']
-        self.ip_address_v6 = endpoint['ip_address_v6']
         self.peers_ip: typing.List = [resolve(x) for x in all_peers if x != self.device]
         self.service_type = service_type
+        self.customer_name = customer_name
+
         if self.service_type == "trs":
             self.asn = endpoint['bgp']['asn']
             self.group = endpoint['bgp']['group']
+            self.export_policy = endpoint['bgp']['export_policy']
             self.prefix_limit_v4 = endpoint['bgp']['v4']['prefix_limit']
             self.prefix_list_v4 = endpoint['bgp']['v4']['prefix_list']
-            self.prefix_limit_v6 = endpoint['bgp']['v6']['prefix_limit']
-            self.prefix_list_v6 = endpoint['bgp']['v6']['prefix_list']
+
+            def _neighbor_v4(prefix):
+                ip, cidr = prefix.split('/')
+                a, b, c, d = ip.split('.')
+                return "{}.{}.{}.{}/{}".format(a, b, c, int(d) + 1, cidr)
+
+            def _neighbor_v6(prefix):
+                ip, cidr = prefix.split('/')
+                return "{}{}/{}".format(ip, 1, cidr)
+
+            self.bgp_neighbor_v4 = _neighbor_v4(self.ip_address_v4)
+
+            if 'ip_address_v6' in endpoint:
+                self.ip_address_v6 = endpoint['ip_address_v6']
+                self.prefix_limit_v6 = endpoint['bgp']['v6']['prefix_limit']
+                self.prefix_list_v6 = endpoint['bgp']['v6']['prefix_list']
+                self.bgp_neighbor_v6 = _neighbor_v6(self.ip_address_v6)
+            else:
+                self.ip_address_v6 = None
+                self.prefix_limit_v6 = None
+                self.prefix_list_v6 = None
+                self.prefix_list_v6 = None
+                self.bgp_neighbor_v6 = None
 
     def to_dict(self) -> typing.Dict:
         if self.service_type == "trs":
             return {
+                'customer_name': self.customer_name,
                 'device': self.device,
                 'device_ip': self.ip,
                 'service_type': self.service_type,
@@ -86,10 +110,13 @@ class Juniper(Endpoint):
                 'ip_address_v6': self.ip_address_v6,
                 'asn': self.asn,
                 'group': self.group,
+                'export_policy': self.export_policy,
                 'prefix_limit_v4': self.prefix_limit_v4,
                 'prefix_list_v4': self.prefix_list_v4,
+                'bgp_neighbor_v4': self.bgp_neighbor_v4,
                 'prefix_limit_v6': self.prefix_limit_v6,
-                'prefix_list_v6': self.prefix_list_v6
+                'prefix_list_v6': self.prefix_list_v6,
+                'bgp_neighbor_v6': self.bgp_neighbor_v6
             }
         else:
             return {

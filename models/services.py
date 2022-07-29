@@ -15,7 +15,8 @@ class Service:
         if 1 <= service['vlan'] <= 4095:
             self.vlan = service['vlan']
         else:
-            logger.error("VLAN {} is not in range 1 to 4095".format(service['vlan']))
+            logger.error(
+                "VLAN {} is not in range 1 to 4095".format(service['vlan']))
             sys.exit(1)
 
         self.all_peers = [peer['device'] for peer in service['endpoints']]
@@ -59,3 +60,8 @@ class BsoBb(Service):
 class Trs(Service):
     def __init__(self, service):
         super(Trs, self).__init__(service)
+
+
+class Dia(Service):
+    def __init__(self, service):
+        super(Dia, self).__init__(service)
