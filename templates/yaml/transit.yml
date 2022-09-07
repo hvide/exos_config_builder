@@ -19,10 +19,11 @@ services:
 
       - device: "" # tagged/untagged
         ether_type: "vlan" # vlan/vman
+        routing_instance: "NON-PREMIUM"
         ip_address_v4: "1.1.1.1/30"
         ip_address_v6: "2a02:aaaa:2:434::/127"
         bgp:
-          asn: "AS12345"
+          asn: "12345"
           group: "CUSTOMER-FULL"
           export_policy: "FULL-TABLE"
           v4:

@@ -13,10 +13,10 @@ service = {
 }
 
 endpoint = {
-        'device': 'sdx3.thn.lon',
-        'ether_type': 'vlan',
-        'ports': [{'dot1q': 'tagged', 'name': [3, 4]},
-                  {'dot1q': 'tagged', 'name': [10]}]
+    'device': 'sdx3.thn.lon',
+    'ether_type': 'vlan',
+    'ports': [{'dot1q': 'tagged', 'name': [3, 4]},
+              {'dot1q': 'tagged', 'name': [10]}]
 }
 
 peers = ['sdx3.thn.lon', 'sdx1.the.lon', 'sdx1.eq5.fra']
@@ -76,4 +76,3 @@ class VpwsTest(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
-

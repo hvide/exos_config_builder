@@ -125,6 +125,7 @@ if __name__ == '__main__':
 
                 if endpoint['device'].startswith("sdx") or endpoint['device'].startswith("sds"):
                     endpoint_obj = Extreme(
+
                         endpoint, service_obj.all_peers, service_obj.service_type)
                 elif endpoint['device'].startswith("icr"):
                     endpoint_obj = Juniper(

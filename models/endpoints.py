@@ -16,7 +16,8 @@ class Endpoint:
         self.ip: str = resolve(self.device)
         self.service_type = service_type
         self.ports: typing.List = endpoint['ports']
-        self.all_ports: typing.List = reduce(lambda x, y: x+y, [x['name'] for x in self.ports])
+        self.all_ports: typing.List = reduce(
+            lambda x, y: x+y, [x['name'] for x in self.ports])
 
         self.peers_ip = []
         for position, peer in enumerate(all_peers):
@@ -62,9 +63,11 @@ class Juniper(Endpoint):
         super(Juniper, self).__init__(endpoint, all_peers, service_type)
         self.vendor = "juniper"
         self.ip_address_v4 = endpoint['ip_address_v4']
-        self.peers_ip: typing.List = [resolve(x) for x in all_peers if x != self.device]
+        self.peers_ip: typing.List = [
+            resolve(x) for x in all_peers if x != self.device]
         self.service_type = service_type
         self.customer_name = customer_name
+        self.routing_instance = endpoint['routing_instance']
 
         if self.service_type == "trs":
             self.asn = endpoint['bgp']['asn']
@@ -76,11 +79,11 @@ class Juniper(Endpoint):
             def _neighbor_v4(prefix):
                 ip, cidr = prefix.split('/')
                 a, b, c, d = ip.split('.')
-                return "{}.{}.{}.{}/{}".format(a, b, c, int(d) + 1, cidr)
+                return "{}.{}.{}.{}".format(a, b, c, int(d) + 1)
 
             def _neighbor_v6(prefix):
                 ip, cidr = prefix.split('/')
-                return "{}{}/{}".format(ip, 1, cidr)
+                return "{}{}".format(ip, 1)
 
             self.bgp_neighbor_v4 = _neighbor_v4(self.ip_address_v4)
 
@@ -92,7 +95,6 @@ class Juniper(Endpoint):
             else:
                 self.ip_address_v6 = None
                 self.prefix_limit_v6 = None
-                self.prefix_list_v6 = None
                 self.prefix_list_v6 = None
                 self.bgp_neighbor_v6 = None
 
@@ -116,7 +118,8 @@ class Juniper(Endpoint):
                 'bgp_neighbor_v4': self.bgp_neighbor_v4,
                 'prefix_limit_v6': self.prefix_limit_v6,
                 'prefix_list_v6': self.prefix_list_v6,
-                'bgp_neighbor_v6': self.bgp_neighbor_v6
+                'bgp_neighbor_v6': self.bgp_neighbor_v6,
+                'routing_instance': self.routing_instance
             }
         else:
             return {
@@ -126,5 +129,6 @@ class Juniper(Endpoint):
                 'ports': self.ports,
                 'peers_ip': self.peers_ip,
                 'vendor': self.vendor,
-                'ip_address_v4': self.ip_address_v4
+                'ip_address_v4': self.ip_address_v4,
+                'routing_instance': self.routing_instance
             }

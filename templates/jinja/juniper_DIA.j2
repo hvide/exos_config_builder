@@ -8,7 +8,7 @@ interfaces {
                 mtu 1500;
                 address {{ ip_address_v4 }};
             }
-        {% if ip_address_v6 is defined -%}
+        {% if ip_address_v6 is not none -%}
             family inet6 {
                 mtu 1500;
                 address {{ ip_address_v6 }};
@@ -33,7 +33,7 @@ protocols {
 }
 
 routing-instances {
-    NON-PREMIUM {
+    {{ routing_instance }} {
         interface {{ ports[0].name[0] }}.{{ vlan }};
     }
 }
@@ -41,7 +41,7 @@ routing-instances {
 {% if service_type == "trs" -%}
 
 routing-instances {
-    NON-PREMIUM {
+    {{ routing_instance }} {
         protocols {
             bgp {
             	group {{ group }} {
@@ -60,7 +60,7 @@ routing-instances {
                         peer-as {{ asn }};
                     }
             	}
-                {% if ip_address_v6 is defined -%}
+            {% if ip_address_v6 is not none -%}
             	group {{ group }}-V6 {
                     neighbor {{ bgp_neighbor_v6 }} {
                         description {{ service_name }};
@@ -96,7 +96,7 @@ policy-options {
         }
         then reject;
     }
-    {% if ip_address_v6 is defined -%}
+{% if ip_address_v6 is not none -%}
     policy-statement CUSTOMER-{{ customer_name.upper() }}-V6-IN {
         term ALLOW {
             from {
