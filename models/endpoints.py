@@ -132,3 +132,51 @@ class Juniper(Endpoint):
                 'ip_address_v4': self.ip_address_v4,
                 'routing_instance': self.routing_instance
             }
+
+
+class Juniper_c2c(Endpoint):
+    def __init__(self, endpoint, all_peers, service_type, customer_name):
+        super(Juniper_c2c, self).__init__(endpoint, all_peers, service_type)
+        self.ip_base = '172.18.10.'
+        self.last_octect = self._ip_octects(resolve(self.device))[-1]
+        self.loopback: str = self.ip_base + self.last_octect
+        self.routing_instance = 'LOLAC2C-' + customer_name
+
+        self.peer_as = endpoint['bgp']['asn']
+        self.group_ebgp = endpoint['cloud_type']
+        self.group_ibgp = 'iBGP'
+        # self.lo0 = endpoint['lo0']
+        self.neighbor_ibgp = []
+        self.neighbor_ebgp = []
+
+        for port in endpoint['ports']:
+            if port['type'] == 'internal':
+                self.neighbor_ibgp.append(self._neighbor_v4(port['address']))
+            elif port['type'] == 'cloud':
+                self.neighbor_ebgp.append(self._neighbor_v4(port['address']))
+
+    def _neighbor_v4(self, prefix):
+        ip, cidr = prefix.split('/')
+        a, b, c, d = ip.split('.')
+        return "{}.{}.{}.{}".format(a, b, c, int(d) + 1)
+
+    def _ip_octects(self, ip: str) -> str:
+        octects = ip.split('.')
+        return octects
+
+    # def bgp_neighbor(bgp_type) -> typing.List:
+
+    def to_dict(self) -> typing.Dict:
+        return {
+            'device': self.device,
+            'service_type': self.service_type,
+            'ports': self.ports,
+            'loopback': self.loopback,
+            'routing_instance': self.routing_instance,
+            'peer_as': self.peer_as,
+            'neighbor_ibgp': self.neighbor_ibgp,
+            'neighbor_ebgp': self.neighbor_ebgp,
+            'group_ebgp': self.group_ebgp.capitalize(),
+            'group_ibgp': self.group_ibgp,
+            # 'lo0': self.lo0,
+        }

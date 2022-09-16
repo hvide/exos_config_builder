@@ -6,15 +6,15 @@ services:
     service_name: "EPL/LON/LON/IXR-10556" # EPL/LON/PAR/IXR-1234
     service_type: "vpws" # vpws/vpls/vlan/bso-bb
     endpoints:
-      - device: "" # tagged/untagged
+      - device: ""
         ether_type: "vlan" # vlan/vman
         ports:
           - dot1q: "tagged"
             name:
               - 3
 
-      - device: "" # tagged/untagged
-        ether_type: "vlan" # vlan/vman
+      - device: ""
+        ether_type: "vlan"
         ports:
           - dot1q: "untagged"
             name:

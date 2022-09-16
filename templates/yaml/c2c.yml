@@ -1,0 +1,57 @@
+---
+customer_name: "ACME"
+firewall_conf: False
+policy_conf: False
+services:
+  # Service C2C
+  - service_name: "CLD/TYO/TYO/IXR-10335" # EPL/LON/PAR/IXR-1234
+    service_type: "c2c" # vpws/vpls/vlan/bso-bb/c2c
+    so: 2356
+    endpoints:
+      - device: "icr1.eq2.tyo"
+        cloud_type: aws
+        # lo0:
+        #   unit_number: 2356
+        #   ip: 172.18.10.1
+        ports:
+          - description: "Desc"
+            type: "cloud" # AWS/GCP/AZURE
+            vlan: 345
+            address: 169.254.255.1/30
+            name:
+              - ae1
+          - description: "Desc"
+            type: "internal"
+            vlan: 456
+            address: 169.254.254.33/30
+            name:
+              - ae0
+        bgp:
+          asn: 12345
+
+      - device: "icr1.eq2.iad"
+        cloud_type: aws
+        # lo0:
+        #   unit_number: 2356
+        #   ip: 172.18.10.10
+        ports:
+          - description: "Desc"
+            type: "cloud"
+            vlan: 890
+            address: 169.254.255.1/30
+            name:
+              - ae1
+          - description: "Desc"
+            type: "internal"
+            vlan: 456
+            address: 169.254.255.1/30
+            name:
+              - ae0
+          - description: "Desc"
+            type: "internal"
+            vlan: 456
+            address: 169.254.255.8/30
+            name:
+              - ae0
+        bgp:
+          asn: 12345

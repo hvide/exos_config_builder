@@ -1,0 +1,93 @@
+interfaces {
+    {% for port in ports -%}
+    {{ port.name[0] }} {
+        unit {{ port.vlan }} {
+            description {{ port.description }};
+            encapsulation ethernet;
+            family inet {
+                mtu 1500;
+                address {{ port.address }};
+            }
+        }
+    }
+    {% endfor -%}
+    lo0 {
+        unit {{ so }}
+            family inet {
+                filter {
+                    input LOOPBACK-C2C;
+                }
+                address {{ loopback }};
+            }
+        }
+    }
+}
+
+
+routing-instances {
+    {{ routing_instance }} {
+        {% for port in ports -%}
+        interface {{ port.name[0] }}.{{ port.vlan }};
+        {% endfor -%}
+        interface lo0.{{ so }};
+        routing-options {
+            router-id {{ loopback }};
+            autonomous-system 4455;
+        }
+        protocols {
+            bgp {
+                family inet {
+                    unicast {
+                        loops 2;
+                    }
+                }
+            	group {{ group_ebgp }} {
+                    description {{ service_name }};
+                    type external;
+                    import eBGP-IMPORT;
+                    export eBGP-EXPORT;
+                    peer-as {{ peer_as }};
+                    {% for neighbor in neighbor_ebgp -%}
+                    neighbor {{ neighbor }};
+                {% endfor -%}
+            	}
+            	group {{ group_ibgp }} {
+                    description {{ service_name }};
+                    type internal;
+                    advertise-peer-as;
+                    import LOLAC2C-INTERNAL-IMPORT;
+                    export LOLAC2C-INTERNAL-EXPORT;
+                    {% for neighbor in neighbor_ibgp -%}
+                    neighbor {{ neighbor }};
+                    {% endfor -%}
+            	}
+            }
+            ospf {
+                area 0.0.0.0 {
+                    {% for port in ports -%}
+                    {% if port.type == 'internal' -%}
+                    interface {{ port.name[0] }}.{{ port.vlan }} {
+                        interface-type p2p;
+                    }
+                    {% elif port.type == 'cloud'  -%}
+                    interface {{ port.name[0] }}.{{ port.vlan }} {
+                        passive;
+                    }
+                    {% endif -%}
+                    {% endfor -%}
+                    interface lo0.{{ so }} {
+                        passive;
+                    }
+                }
+            }
+        }
+    }
+}
+
+{% if policy_conf -%}
+{% include 'c2c_policy.j2' %}
+{% endif -%}
+
+{% if firewall_conf -%}
+{% include 'c2c_firewall.j2' %}
+{% endif -%}

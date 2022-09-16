@@ -7,8 +7,8 @@ import typing
 import jinja2
 from tabulate import tabulate
 
-from models.services import Vpws, Vpls, Vlan, BsoBb, Trs, Dia
-from models.endpoints import Extreme, Juniper
+from models.services import Vpws, Vpls, Vlan, BsoBb, Trs, Dia, Service_c2c
+from models.endpoints import Extreme, Juniper, Juniper_c2c
 
 from pprint import pprint
 
@@ -66,6 +66,7 @@ empty_template = {
     'vlan': 'vlan.yml',
     'vpls': 'vpls.yml',
     'vpws': 'vpws.yml',
+    'c2c': 'c2c.yml',
 }
 
 parser = argparse.ArgumentParser()
@@ -73,19 +74,21 @@ parser.add_argument('-c', type=str, action="store",
                     dest="config", required=False, help="Path to .yml file")
 parser.add_argument('-t', type=str, action="store", dest="template", required=False,
                     help=f"Can be one of the following: {list(empty_template.keys())}.")
-parser.add_argument('-e', action="store_true", dest="example",
-                    required=False, help="Print example")
+# parser.add_argument('-e', action="store_true", dest="example",
+#                     required=False, help="Print example")
+parser.add_argument('-v', action="store_true", dest="verbose",
+                    required=False, help="Verbose output")
 
 
 if __name__ == '__main__':
 
     args = parser.parse_args()
-    if args.example:
-        with open(EXAMPLE, 'r') as f:
-            lines = f.readlines()
-            for line in lines:
-                print(line.rstrip())
-            sys.exit(0)
+    # if args.example:
+    #     with open(EXAMPLE, 'r') as f:
+    #         lines = f.readlines()
+    #         for line in lines:
+    #             print(line.rstrip())
+    #         sys.exit(0)
 
     if args.template in empty_template:
         with open(EMPTY_YML_TEMPLATE + empty_template[args.template], 'r') as f:
@@ -116,22 +119,33 @@ if __name__ == '__main__':
                 service_obj = Trs(service)
             elif service['service_type'] == "dia":
                 service_obj = Dia(service)
+            elif service['service_type'] == "c2c":
+                data['firewall_conf'] = config['firewall_conf']
+                data['policy_conf'] = config['policy_conf']
+                service_obj = Service_c2c(service)
 
-            print("\n########################\n## Service: v{}-{} ##\n".format(
-                service_obj.vlan, data['customer_name']))
+            if service['service_type'] != "c2c":
+                print("\n########################\n## Service: v{}-{} ##\n".format(
+                    service_obj.vlan, data['customer_name']))
+
             data = data | service_obj.to_dict()
             # pprint(data)
             for endpoint in service['endpoints']:
 
                 if endpoint['device'].startswith("sdx") or endpoint['device'].startswith("sds"):
                     endpoint_obj = Extreme(
-
                         endpoint, service_obj.all_peers, service_obj.service_type)
+                elif service['service_type'] == "c2c":
+                    endpoint_obj = Juniper_c2c(
+                        endpoint, service_obj.all_peers, service_obj.service_type, data['customer_name'])
                 elif endpoint['device'].startswith("icr"):
                     endpoint_obj = Juniper(
                         endpoint, service_obj.all_peers, service_obj.service_type, data['customer_name'])
 
                 data = data | endpoint_obj.to_dict()
+
+                if args.verbose:
+                    pprint(data)
                 print('')
                 print(j2_render(TEMPLATE, data))
 

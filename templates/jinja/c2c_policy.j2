@@ -1,0 +1,35 @@
+policy-options {
+    prefix-list configured-bgp-instance-neighbors {
+        apply-path "routing-instances <*> protocols bgp group <*> neighbor <*>";
+    }
+    prefix-list C2C-MGMT {
+        169.254.255.0/24;
+        172.18.10.0/24;
+    }
+	policy-statement eBGP-IMPORT {
+        term T1 {
+            from protocol bgp;
+            then accept;
+        }
+        then reject;
+    }
+	policy-statement eBGP-EXPORT {
+        term T1 {
+            from protocol bgp;
+            then accept;
+        }
+        then reject;
+    }
+	policy-statement LOLAC2C-INTERNAL-IMPORT {
+        term T1 {
+            from protocol bgp;
+            then accept;
+        }
+        then reject;
+    }
+	policy-statement LOLAC2C-INTERNAL-EXPORT {
+        then {
+            next-hop self;
+        }
+    }
+}

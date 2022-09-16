@@ -1,5 +1,9 @@
 # Device: {{ device }} - {{ device_ip }}
 
+{% if (service_type == 'c2c') -%}
+{% include 'c2c.j2' %}
+{% else -%}
+
 {% if vendor == "extreme" -%}
 
 {% if (service_type == 'bso-bb') -%}
@@ -25,3 +29,4 @@
 {% include 'juniper_DIA.j2' -%}
 
 {% endif %}
+{% endif -%}

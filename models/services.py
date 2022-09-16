@@ -65,3 +65,22 @@ class Trs(Service):
 class Dia(Service):
     def __init__(self, service):
         super(Dia, self).__init__(service)
+
+
+class Service_c2c:
+    def __init__(self, service: typing.Dict):
+
+        self.service_name = service['service_name']
+        self.service_type = service['service_type']
+        self.so = service['so']
+        self.all_peers = [peer['device'] for peer in service['endpoints']]
+
+    def to_dict(self) -> typing.Dict:
+        return {
+            'service_name': self.service_name,
+            'service_type': self.service_type,
+            'so': self.so,
+        }
+
+    def __repr__(self):
+        return self.service_name
