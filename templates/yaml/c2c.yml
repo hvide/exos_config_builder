@@ -14,13 +14,13 @@ services:
         #   unit_number: 2356
         #   ip: 172.18.10.1
         ports:
-          - description: "Desc"
+          - description: "sdc1.cme.chi"
             type: "cloud" # AWS/GCP/AZURE
             vlan: 345
             address: 169.254.255.1/30
             name:
               - ae1
-          - description: "Desc"
+          - description: "icr1.eq2.iad"
             type: "internal"
             vlan: 456
             address: 169.254.254.33/30
@@ -35,19 +35,19 @@ services:
         #   unit_number: 2356
         #   ip: 172.18.10.10
         ports:
-          - description: "Desc"
+          - description: "icr1.eq2.tyo"
             type: "cloud"
             vlan: 890
             address: 169.254.255.1/30
             name:
               - ae1
-          - description: "Desc"
+          - description: "sdc1.eq7.ams"
             type: "internal"
             vlan: 456
             address: 169.254.255.1/30
             name:
               - ae0
-          - description: "Desc"
+          - description: "sdc1.ixn1.lon"
             type: "internal"
             vlan: 456
             address: 169.254.255.8/30

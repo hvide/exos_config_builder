@@ -142,7 +142,8 @@ class Juniper_c2c(Endpoint):
         self.loopback: str = self.ip_base + self.last_octect
         self.routing_instance = 'LOLAC2C-' + customer_name
 
-        self.peer_as = endpoint['bgp']['asn']
+        self.peer_as = endpoint['bgp']['peer_as']
+        self.local_as = endpoint['bgp']['local_as']
         self.group_ebgp = endpoint['cloud_type']
         self.group_ibgp = 'iBGP'
         # self.lo0 = endpoint['lo0']
@@ -151,9 +152,11 @@ class Juniper_c2c(Endpoint):
 
         for port in endpoint['ports']:
             if port['type'] == 'internal':
-                self.neighbor_ibgp.append(self._neighbor_v4(port['address']))
+                self.neighbor_ibgp.append({'address': self._neighbor_v4(
+                    port['address']), 'description': port['description'], 'loopback': resolve(port['description'])})
             elif port['type'] == 'cloud':
-                self.neighbor_ebgp.append(self._neighbor_v4(port['address']))
+                self.neighbor_ebgp.append({'address': self._neighbor_v4(
+                    port['address']), 'description': port['description']})
 
     def _neighbor_v4(self, prefix):
         ip, cidr = prefix.split('/')
@@ -174,6 +177,7 @@ class Juniper_c2c(Endpoint):
             'loopback': self.loopback,
             'routing_instance': self.routing_instance,
             'peer_as': self.peer_as,
+            'local_as': self.local_as,
             'neighbor_ibgp': self.neighbor_ibgp,
             'neighbor_ebgp': self.neighbor_ebgp,
             'group_ebgp': self.group_ebgp.capitalize(),

@@ -2,7 +2,7 @@ interfaces {
     {% for port in ports -%}
     {{ port.name[0] }} {
         unit {{ port.vlan }} {
-            description {{ port.description }};
+            description "to {{ port.description }}";
             encapsulation ethernet;
             family inet {
                 mtu 1500;
@@ -46,9 +46,12 @@ routing-instances {
                     type external;
                     import eBGP-IMPORT;
                     export eBGP-EXPORT;
+                    local-as {{ local_as }};
                     peer-as {{ peer_as }};
                     {% for neighbor in neighbor_ebgp -%}
-                    neighbor {{ neighbor }};
+                    neighbor {{ neighbor.address }} {
+                        description "{{ neighbor.description }}";
+                    };
                 {% endfor -%}
             	}
             	group {{ group_ibgp }} {
@@ -58,7 +61,9 @@ routing-instances {
                     import LOLAC2C-INTERNAL-IMPORT;
                     export LOLAC2C-INTERNAL-EXPORT;
                     {% for neighbor in neighbor_ibgp -%}
-                    neighbor {{ neighbor }};
+                    neighbor {{ neighbor.loopback }} {
+                        description "{{ neighbor.description }}";
+                    };
                     {% endfor -%}
             	}
             }
