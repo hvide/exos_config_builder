@@ -2,8 +2,12 @@ interfaces {
     {% for port in ports -%}
     {{ port.name[0] }} {
         unit {{ port.vlan }} {
-            description "to {{ port.description }}";
-            encapsulation ethernet;
+            {% if port.type == 'cloud' -%}
+            description "{{ port.description }} - to {{ group_ebgp }}";
+            {% else -%}
+            description "{{ port.description }} - to {{ port.peer }}";
+            {% endif -%}
+            vlan-id {{ port.vlan }};
             family inet {
                 mtu 1500;
                 address {{ port.address }};
@@ -21,11 +25,10 @@ interfaces {
             }
         }
     }
-}
-
 
 routing-instances {
     {{ routing_instance }} {
+        instance-type virtual-router;
         {% for port in ports -%}
         interface {{ port.name[0] }}.{{ port.vlan }};
         {% endfor -%}
@@ -51,19 +54,21 @@ routing-instances {
                     {% for neighbor in neighbor_ebgp -%}
                     neighbor {{ neighbor.address }} {
                         description "{{ neighbor.description }}";
-                    };
+                        authentication-key {{ neighbor.auth_key }}; ## SECRET-DATA
+                    }
                 {% endfor -%}
             	}
             	group {{ group_ibgp }} {
-                    description {{ service_name }};
                     type internal;
+                    description {{ service_name }};
+                    local-address {{ loopback }};
                     advertise-peer-as;
                     import LOLAC2C-INTERNAL-IMPORT;
                     export LOLAC2C-INTERNAL-EXPORT;
                     {% for neighbor in neighbor_ibgp -%}
                     neighbor {{ neighbor.loopback }} {
                         description "{{ neighbor.description }}";
-                    };
+                    }
                     {% endfor -%}
             	}
             }

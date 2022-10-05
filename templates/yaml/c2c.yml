@@ -4,54 +4,58 @@ firewall_conf: False
 policy_conf: False
 services:
   # Service C2C
-  - service_name: "CLD/TYO/TYO/IXR-10335" # EPL/LON/PAR/IXR-1234
+  - service_name: "Service_ID" # Service_ID
     service_type: "c2c" # vpws/vpls/vlan/bso-bb/c2c
-    so: 2356
+    so: 6211
     endpoints:
-      - device: "icr1.eq2.tyo"
+      - device: "r1"
         cloud_type: aws
-        # lo0:
-        #   unit_number: 2356
-        #   ip: 172.18.10.1
         ports:
-          - description: "sdc1.cme.chi"
+          - description: "Service_ID"
+            auth_key: "myKey"
             type: "cloud" # AWS/GCP/AZURE
             vlan: 345
             address: 169.254.255.1/30
             name:
               - ae1
-          - description: "icr1.eq2.iad"
+          - description: "Service_ID"
+            peer: "r2"
             type: "internal"
             vlan: 456
             address: 169.254.254.33/30
             name:
               - ae0
         bgp:
-          asn: 12345
+          peer_as: 12345
+          local_as: 88888
 
-      - device: "icr1.eq2.iad"
+      - device: "r2"
         cloud_type: aws
-        # lo0:
-        #   unit_number: 2356
-        #   ip: 172.18.10.10
+        lo0:
+          unit_number: 6211
+          ip: 172.18.10.10
         ports:
-          - description: "icr1.eq2.tyo"
+          - description: "Service_ID"
+            auth_key: "myKey"
             type: "cloud"
             vlan: 890
             address: 169.254.255.1/30
             name:
               - ae1
-          - description: "sdc1.eq7.ams"
+          - description: "Service_ID"
+            peer: "r1"
             type: "internal"
             vlan: 456
             address: 169.254.255.1/30
             name:
               - ae0
-          - description: "sdc1.ixn1.lon"
+          - description: "Service_ID"
+            peer: "r3"
             type: "internal"
             vlan: 456
             address: 169.254.255.8/30
             name:
               - ae0
         bgp:
-          asn: 12345
+          peer_as: 12345
+          local_as: 88888

@@ -152,16 +152,31 @@ class Juniper_c2c(Endpoint):
 
         for port in endpoint['ports']:
             if port['type'] == 'internal':
-                self.neighbor_ibgp.append({'address': self._neighbor_v4(
-                    port['address']), 'description': port['description'], 'loopback': resolve(port['description'])})
+                self.neighbor_ibgp.append({
+                    'address': self._neighbor_v4(port['address']),
+                    'description': port['peer'],
+                    'loopback': resolve(port['peer'])
+                })
             elif port['type'] == 'cloud':
-                self.neighbor_ebgp.append({'address': self._neighbor_v4(
-                    port['address']), 'description': port['description']})
+                self.neighbor_ebgp.append({
+                    'address': self._neighbor_v4(port['address']),
+                    'description': self.group_ebgp.upper(),
+                    'auth_key': port['auth_key']
+                })
 
     def _neighbor_v4(self, prefix):
         ip, cidr = prefix.split('/')
         a, b, c, d = ip.split('.')
-        return "{}.{}.{}.{}".format(a, b, c, int(d) + 1)
+        if cidr == "31":
+            if (int(d) % 2) == 0:
+                return "{}.{}.{}.{}".format(a, b, c, int(d) + 1)
+            else:
+                return "{}.{}.{}.{}".format(a, b, c, int(d) - 1)
+        else:
+            if (int(d) % 2) == 0:
+                return "{}.{}.{}.{}".format(a, b, c, int(d) - 1)
+            else:
+                return "{}.{}.{}.{}".format(a, b, c, int(d) + 1)
 
     def _ip_octects(self, ip: str) -> str:
         octects = ip.split('.')
@@ -180,7 +195,7 @@ class Juniper_c2c(Endpoint):
             'local_as': self.local_as,
             'neighbor_ibgp': self.neighbor_ibgp,
             'neighbor_ebgp': self.neighbor_ebgp,
-            'group_ebgp': self.group_ebgp.capitalize(),
+            'group_ebgp': self.group_ebgp.upper(),
             'group_ibgp': self.group_ibgp,
             # 'lo0': self.lo0,
         }
