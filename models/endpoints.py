@@ -139,7 +139,8 @@ class Juniper_c2c(Endpoint):
         super(Juniper_c2c, self).__init__(endpoint, all_peers, service_type)
         self.ip_base = '172.18.10.'
         self.last_octect = self._ip_octects(resolve(self.device))[-1]
-        self.loopback: str = self.ip_base + self.last_octect
+        # self.loopback: str = self.ip_base + self.last_octect
+        self.loopback: str = resolve(self.device)
         self.routing_instance = 'LOLAC2C-' + customer_name
 
         self.peer_as = endpoint['bgp']['peer_as']
