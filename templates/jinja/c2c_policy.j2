@@ -2,6 +2,9 @@ policy-options {
     prefix-list configured-bgp-instance-neighbors {
         apply-path "routing-instances <*> protocols bgp group <*> neighbor <*>";
     }
+    prefix-list configured-bgp-neighbors {
+        apply-path "protocols bgp group <*> neighbor <*>";
+    }
     prefix-list C2C-MGMT {
         169.254.255.0/24;
         172.18.10.0/24;
