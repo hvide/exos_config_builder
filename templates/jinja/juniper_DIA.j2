@@ -8,7 +8,7 @@ interfaces {
                 mtu 1500;
                 address {{ ip_address_v4 }};
             }
-        {% if ip_address_v6 is not none -%}
+        {% if ip_address_v6 is defined -%}
             family inet6 {
                 mtu 1500;
                 address {{ ip_address_v6 }};
